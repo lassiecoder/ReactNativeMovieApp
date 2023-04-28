@@ -1,15 +1,10 @@
 import React from 'react';
-import {
-  Text,
-  View,
-  Image,
-  FlatList,
-  StyleSheet,
-  TouchableOpacity,
-} from 'react-native';
+import {Text, View, FlatList, StyleSheet} from 'react-native';
 
 import {removeFavorite} from '../redux/actions';
 import {useSelector, useDispatch} from 'react-redux';
+
+import Card from '../global-component/Card';
 
 const Favorites = () => {
   const dispatch = useDispatch();
@@ -20,54 +15,25 @@ const Favorites = () => {
   const handleRemoveFavorite = movie => {
     removeFromFavorites(movie);
   };
+  const exists = movie => {
+    if (favorites.filter(item => item.id === movie.id).length > 0) {
+      return true;
+    }
+    return false;
+  };
 
   const FavoriteItem = ({item}) => {
     const IMAGE_URL = 'https://image.tmdb.org/t/p/w185' + item.poster_path;
     return (
-      <View style={styles.movieItemContainer}>
-        <View>
-          <Image
-            source={{
-              uri: IMAGE_URL,
-            }}
-            style={styles.moviewBanner}
-          />
-        </View>
-        <View style={styles.movieDetailsContainer}>
-          <Text style={styles.title} numberOfLines={1}>
-            {item.title}
-          </Text>
-          <Text style={styles.subtitle} numberOfLines={3}>
-            {item.overview}
-          </Text>
-
-          <View style={styles.actionsContainer}>
-            <View style={styles.likeContainer}>
-              <Image
-                source={require('../assets/star.png')}
-                style={styles.ratingLikesIcon}
-              />
-              <Text style={styles.voteText}> {item.vote_average}</Text>
-            </View>
-            <View style={styles.likeContainer}>
-              <Image
-                source={require('../assets/like.png')}
-                style={styles.ratingLikesIcon}
-              />
-              <Text style={styles.voteText}> {item.vote_count}</Text>
-            </View>
-            <TouchableOpacity
-              activeOpacity={0.8}
-              onPress={() => handleRemoveFavorite(item)}
-              style={styles.likeContainer}>
-              <Image
-                source={require('../assets/favorite-active.png')}
-                style={styles.ratingLikesIcon}
-              />
-            </TouchableOpacity>
-          </View>
-        </View>
-      </View>
+      <Card
+        title={item.title}
+        source={{uri: IMAGE_URL}}
+        onPress={() => handleRemoveFavorite(item)}
+        overview={item.overview}
+        vote_count={item.vote_count}
+        existsState={exists(item)}
+        vote_average={item.vote_average}
+      />
     );
   };
 

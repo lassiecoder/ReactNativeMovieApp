@@ -1,18 +1,14 @@
-import React, {useEffect} from 'react';
-import {
-  View,
-  Text,
-  Image,
-  FlatList,
-  StyleSheet,
-  TouchableOpacity,
-} from 'react-native';
+import React, {useEffect, useState} from 'react';
+import {View, FlatList, StyleSheet, TextInput} from 'react-native';
 
 import {useSelector, useDispatch} from 'react-redux';
 import {getMovies, addFavorite, removeFavorite} from '../redux/actions';
+import Card from '../global-component/Card';
 
 const Movies = () => {
   const dispatch = useDispatch();
+  const [search, setSearch] = useState();
+  const [listData, setListData] = useState([]);
 
   const {movies, favorites} = useSelector(state => state.moviesReducer);
 
@@ -36,72 +32,46 @@ const Movies = () => {
     fetchMovies();
   }, []);
 
+  const handleSearch = text => {
+    if (text) {
+      const searchedData = movies.results.filter(item => {
+        const itemTitle = item.title;
+        return itemTitle.toLowerCase().indexOf(text.toLowerCase()) > -1;
+      });
+      setListData(searchedData);
+      setSearch(text);
+    } else {
+      setSearch(text);
+    }
+  };
+
   const MovieItem = ({item}) => {
     const IMAGE_URL = 'https://image.tmdb.org/t/p/w185' + item.poster_path;
     return (
-      <View style={styles.movieItemContainer}>
-        <View>
-          <Image
-            source={{
-              uri: IMAGE_URL,
-            }}
-            style={styles.moviewBanner}
-          />
-        </View>
-        <View style={styles.movieDetailsContainer}>
-          <Text style={styles.title} numberOfLines={1}>
-            {item.title}
-          </Text>
-          <Text style={styles.subtitle} numberOfLines={3}>
-            {item.overview}
-          </Text>
-
-          <View style={styles.actionsContainer}>
-            <View style={styles.likeContainer}>
-              <Image
-                source={require('../assets/star.png')}
-                style={styles.ratingLikesIcon}
-              />
-              <Text style={styles.voteText}> {item.vote_average}</Text>
-            </View>
-            <View style={styles.likeContainer}>
-              <Image
-                source={require('../assets/like.png')}
-                style={styles.ratingLikesIcon}
-              />
-              <Text style={styles.voteText}> {item.vote_count}</Text>
-            </View>
-            <TouchableOpacity
-              activeOpacity={0.8}
-              onPress={() =>
-                exists(item)
-                  ? handleRemoveFavorite(item)
-                  : handleAddFavorite(item)
-              }
-              style={styles.likeContainer}>
-              {exists(item) ? (
-                <Image
-                  source={require('../assets/favorite-active.png')}
-                  style={styles.ratingLikesIcon}
-                />
-              ) : (
-                <Image
-                  source={require('../assets/favorite-unfilled.png')}
-                  style={styles.ratingLikesIcon}
-                />
-              )}
-            </TouchableOpacity>
-          </View>
-        </View>
-      </View>
+      <Card
+        title={item.title}
+        source={{uri: IMAGE_URL}}
+        onPress={() =>
+          exists(item) ? handleRemoveFavorite(item) : handleAddFavorite(item)
+        }
+        overview={item.overview}
+        vote_count={item.vote_count}
+        existsState={exists(item)}
+        vote_average={item.vote_average}
+      />
     );
   };
 
   return (
     <View style={styles.mainContainer}>
       <View style={styles.childContainer}>
+        <TextInput
+          value={search}
+          placeholder={'Search movies'}
+          onChangeText={text => handleSearch(text)}
+        />
         <FlatList
-          data={movies.results}
+          data={search?.length ? listData : movies.results}
           renderItem={MovieItem}
           showsVerticalScrollIndicator={false}
           keyExtractor={item => item.id.toString()}
