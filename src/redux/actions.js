@@ -1,5 +1,6 @@
 import axios from 'axios';
 
+// ACTION TYPES
 export const GET_MOVIES = 'GET_MOVIES';
 export const ADD_FAVORITE_ITEM = 'ADD_FAVORITE_ITEM';
 export const REMOVE_FAVORITE_ITEM = 'REMOVE_FAVORITE_ITEM';
@@ -24,7 +25,7 @@ export const getMovies = () => {
       }
     };
   } catch (error) {
-    // Add custom logic to handle errors
+    // ERROR HANDLER
     console.error(error);
   }
 };
