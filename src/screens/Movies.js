@@ -67,6 +67,8 @@ const Movies = () => {
       <View style={styles.childContainer}>
         <TextInput
           value={search}
+          clearButtonMode
+          style={styles.searchbar}
           placeholder={'Search movies'}
           onChangeText={text => handleSearch(text)}
         />
@@ -133,6 +135,13 @@ const styles = StyleSheet.create({
     marginTop: 8,
     flexDirection: 'row',
     justifyContent: 'space-between',
+  },
+  searchbar: {
+    padding: 8,
+    borderWidth: 1,
+    marginVertical: 10,
+    borderRadius: 8,
+    borderColor: '#7676888f',
   },
 });
 export default Movies;
